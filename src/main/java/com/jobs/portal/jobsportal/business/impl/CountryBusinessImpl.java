@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 import com.jobs.portal.jobsportal.business.base.CountryBusiness;
+import com.jobs.portal.jobsportal.dto.CountryLagnuagesList;
 import com.jobs.portal.jobsportal.dto.CountryListJsonResponse;
 import com.jobs.portal.jobsportal.request.BaseRequest;
 import com.jobs.portal.jobsportal.response.BaseResponse;
@@ -32,7 +33,10 @@ public class CountryBusinessImpl implements CountryBusiness {
 
 
     ArrayList<String> listOfCountries = new ArrayList<String>();
-
+    
+    //creating list for countries languages
+    ArrayList<String> listOfCountriesLanguages = new ArrayList<String>();
+    
     @Override
     public BaseResponse getJobShift(BaseRequest request) throws Exception {
 
@@ -64,6 +68,34 @@ public class CountryBusinessImpl implements CountryBusiness {
 
 
     }
+//this method is used to get all country languages
+	@Override
+	public BaseResponse getCountryLanguages(BaseRequest request) throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+        HttpHeaders header = new HttpHeaders();
+        header.add("ContentType", "application/json");
+
+
+        List languagesResponse = (List) utility.callGetJson("https://restcountries.eu/rest/v2/all", ArrayList.class, header);
+       List<CountryLagnuagesList> jsonResponseList = null;
+        if(languagesResponse !=null){
+
+            jsonResponseList = mapper.convertValue(languagesResponse, new TypeReference<List<CountryLagnuagesList>>(){});
+            for(int i =0; i<jsonResponseList.size(); i++){
+
+                listOfCountries.add(jsonResponseList.get(i).getCountryLanguages());
+            }
+
+            return  BaseResponse.builder().responseCode(Constants.SUCCESS_RESPONSE_CODE)
+                    .responseMessage(configurationUtil.getMessage(Constants.SUCCESS_RESPONSE_CODE)).response(listOfCountriesLanguages).build();
+
+        }else{
+
+            return BaseResponse.builder().responseCode(Constants.SUCCESS_RESPONSE_CODE)
+                    .responseMessage(configurationUtil.getMessage(Constants.SUCCESS_RESPONSE_CODE)).response(null).build();
+        }
+
+	}
 }
 
 

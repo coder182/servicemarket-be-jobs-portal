@@ -9,4 +9,7 @@ import org.springframework.stereotype.Service;
 public interface CountryBusiness {
 
     BaseResponse getJobShift(BaseRequest request)throws Exception;
+    
+    //creating method to get country languages
+    BaseResponse getCountryLanguages(BaseRequest request) throws Exception;
 }
